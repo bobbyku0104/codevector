@@ -1,4 +1,4 @@
-const BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5000/api';
+const BASE = import.meta.env.VITE_API_BASE_URL ?? 'https://codevector-wpi8.onrender.com/api';
 
 const MOCK_CATEGORIES = ['Electronics', 'Books', 'Home & Kitchen', 'Toys & Games', 'Sports & Outdoors'];
 
