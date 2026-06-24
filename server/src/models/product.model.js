@@ -24,22 +24,18 @@ const productSchema = new mongoose.Schema(
     },
   },
   {
-    timestamps: true, // Auto-generates createdAt and updatedAt
+    timestamps: true,
   }
 );
 
-// Indexes specified in the requirements:
-// 1. Single index on createdAt for sorting (newest first)
+// Sorting index
 productSchema.index({ createdAt: -1 });
 
-// 2. Single index on category for filtering
+// Filtering index
 productSchema.index({ category: 1 });
 
-// Keyset pagination index optimization:
-// 3. Compound index for global newest first cursor pagination
+// Keyset pagination optimized compound indexes
 productSchema.index({ createdAt: -1, _id: -1 });
-
-// 4. Compound index for category filtered newest first cursor pagination
 productSchema.index({ category: 1, createdAt: -1, _id: -1 });
 
 const Product = mongoose.model('Product', productSchema);

@@ -2,7 +2,7 @@ const BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5000/api';
 
 const MOCK_CATEGORIES = ['Electronics', 'Books', 'Home & Kitchen', 'Toys & Games', 'Sports & Outdoors'];
 
-// Generate mock products for offline testing
+// Generate mock items for testing when backend is offline
 const MOCK_PRODUCTS = [];
 let mockId = 1;
 const now = Date.now();
@@ -19,16 +19,14 @@ MOCK_CATEGORIES.forEach((cat) => {
     });
   }
 });
-// Sort newest first
 MOCK_PRODUCTS.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-/** Fetch one keyset page. Pass the previous response's nextCursor (object { id, createdAt }) to continue. */
+// Fetches one keyset page of products
 export async function fetchProducts({ limit = 20, cursor = null, category = null } = {}) {
   const params = new URLSearchParams();
   params.set('limit', String(limit));
   
   if (cursor) {
-    // If cursor is passed as object { id, createdAt }, serialize it as a string
     const cursorStr = typeof cursor === 'object' && cursor.id && cursor.createdAt
       ? `${cursor.createdAt}_${cursor.id}`
       : cursor;
@@ -47,14 +45,13 @@ export async function fetchProducts({ limit = 20, cursor = null, category = null
     }
     return await res.json();
   } catch (error) {
-    console.warn('Backend offline or error occurred. Falling back to mock products.', error);
+    console.warn('Backend offline, using mock products.', error);
     
-    // Filter by category
     const filtered = category 
       ? MOCK_PRODUCTS.filter(p => p.category === category)
       : MOCK_PRODUCTS;
 
-    // Simulate cursor-based pagination locally
+    // Simulate local cursor pagination
     let startIndex = 0;
     if (cursor) {
       const cursorStr = typeof cursor === 'object' ? `${cursor.createdAt}_${cursor.id}` : cursor;
@@ -86,7 +83,7 @@ export async function fetchCategories() {
     const { categories } = await res.json();
     return categories;
   } catch (error) {
-    console.warn('Backend offline. Falling back to mock categories.', error);
+    console.warn('Backend offline, using mock categories.', error);
     return MOCK_CATEGORIES;
   }
 }

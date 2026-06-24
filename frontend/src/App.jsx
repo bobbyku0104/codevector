@@ -17,14 +17,14 @@ export default function App() {
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState(null);
 
-  // Load categories on mount
+  // Fetch categories on mount
   useEffect(() => {
     fetchCategories()
       .then(setCategories)
       .catch((err) => console.error('Failed to load categories', err));
   }, []);
 
-  // Fetch products page. If reset is true, start over (e.g., when category changes)
+  // Fetch more products
   const loadPage = useCallback(
     async (reset = false) => {
       if (loading) return;
@@ -53,7 +53,7 @@ export default function App() {
     [loading, cursor, category]
   );
 
-  // Load initial page and reload when category changes
+  // Reload products when category changes
   useEffect(() => {
     setProducts([]);
     setCursor(null);
@@ -93,7 +93,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
-      {/* Header */}
+      {/* Header section */}
       <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/90 backdrop-blur shadow-sm">
         <div className="mx-auto max-w-6xl px-4 py-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -106,7 +106,7 @@ export default function App() {
         </div>
       </header>
 
-      {/* Main Body */}
+      {/* Main product catalogue grid */}
       <main className="mx-auto max-w-6xl px-4 py-8">
         {error && (
           <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 shadow-sm">
@@ -114,24 +114,23 @@ export default function App() {
           </div>
         )}
 
-        {/* Product Grid */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {/* Skeletons on initial load */}
+          {/* Initial loading skeletons */}
           {initialLoading && <ProductSkeleton count={12} />}
 
-          {/* Product cards */}
+          {/* Render cards */}
           {!initialLoading && products.map((product) => (
             <ProductCard key={product._id || product.id} product={product} />
           ))}
 
-          {/* Skeletons when fetching more */}
+          {/* Load more skeletons */}
           {!initialLoading && loading && <ProductSkeleton count={4} />}
         </div>
 
-        {/* Empty State */}
+        {/* Empty boundary handler */}
         {isEmpty && <EmptyState category={category} />}
 
-        {/* Load More Button Section */}
+        {/* Manual pagination loader */}
         {hasMore && !initialLoading && (
           <div className="mt-12 text-center">
             <button
@@ -144,7 +143,7 @@ export default function App() {
           </div>
         )}
 
-        {/* Footer/End of feed message */}
+        {/* End of feed status */}
         {!hasMore && products.length > 0 && (
           <p className="mt-12 text-center text-sm font-medium text-slate-400">
             No more products to display. You have caught up!
